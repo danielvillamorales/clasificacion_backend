@@ -47,7 +47,7 @@ public class DotacionEntregadaService {
                 try {
                     fecha = dateFormat.parse(parts[4]);
                 } catch (ParseException e) {
-                    new RuntimeException("Error en la fecha debe estar en formato yyyy-mm-dd");
+                    throw new RuntimeException("Error en la fecha debe estar en formato yyyy-mm-dd");
                 }
 
                 Empleados empleado = empleadosRepository.findByEmpleado(empleadoCodigo)
