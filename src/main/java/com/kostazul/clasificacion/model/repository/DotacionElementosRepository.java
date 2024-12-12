@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface DotacionElementosRepository extends JpaRepository<DotacionElementos, Long> {
 
     Optional<DotacionElementos> findByCodigo(String codigo);
+
+    DotacionElementos findTopByOrderByIdDesc();
 }

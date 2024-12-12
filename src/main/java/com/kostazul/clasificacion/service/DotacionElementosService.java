@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,10 +31,7 @@ public class DotacionElementosService {
      */
     public DotacionElementos saveDotacionElementos(String codigo, String descripcion, Long precio) {
         log.warn("saveDotacionElementos");
-        DotacionElementos dotacionElementos = dotacionElementosRepository.findByCodigo(codigo).orElse(
-                save(codigo, descripcion, precio)
-        );
-        return dotacionElementosRepository.save(dotacionElementos);
+        return dotacionElementosRepository.findByCodigo(codigo).orElseGet(() -> save(codigo, descripcion, precio));
     }
 
     /**
@@ -45,6 +43,7 @@ public class DotacionElementosService {
      */
     public DotacionElementos save(String codigo, String descripcion, Long precio){
         return dotacionElementosRepository.save(DotacionElementos.builder()
+                        .id(generateNextId())
                         .codigo(codigo)
                         .descripcion(descripcion)
                         .observaciones("dotacion" + " " + codigo + ": " + descripcion)
@@ -52,5 +51,14 @@ public class DotacionElementosService {
                         .usuarioCreacion("nomina")
                         .fechaCreacion(new java.util.Date())
                 .build());
+    }
+
+    /**
+     * Genera el siguiente id
+     * @return Long
+     */
+    public Long generateNextId() {
+        DotacionElementos lastElement = dotacionElementosRepository.findTopByOrderByIdDesc();
+        return (lastElement != null) ? lastElement.getId() + 1 : 1L;
     }
 }
