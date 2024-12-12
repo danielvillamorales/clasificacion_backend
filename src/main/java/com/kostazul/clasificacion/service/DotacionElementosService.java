@@ -20,4 +20,37 @@ public class DotacionElementosService {
     public List<DotacionElementos> findAll() {
         return dotacionElementosRepository.findAll();
     }
+
+    /**
+     * Guarda un elemento de dotacion
+     * @param codigo codigo
+     * @param descripcion descripcion
+     * @param precio precio
+     * @return DotacionElementos guardada o encontrada
+     */
+    public DotacionElementos saveDotacionElementos(String codigo, String descripcion, Long precio) {
+        log.warn("saveDotacionElementos");
+        DotacionElementos dotacionElementos = dotacionElementosRepository.findByCodigo(codigo).orElse(
+                save(codigo, descripcion, precio)
+        );
+        return dotacionElementosRepository.save(dotacionElementos);
+    }
+
+    /**
+     * Guarda un elemento de dotacion
+     * @param codigo codigo
+     * @param descripcion descripcion
+     * @param precio precio
+     * @return DotacionElementos guardada
+     */
+    public DotacionElementos save(String codigo, String descripcion, Long precio){
+        return dotacionElementosRepository.save(DotacionElementos.builder()
+                        .codigo(codigo)
+                        .descripcion(descripcion)
+                        .observaciones("dotacion" + " " + codigo + ": " + descripcion)
+                        .valorUnitario(precio)
+                        .usuarioCreacion("nomina")
+                        .fechaCreacion(new java.util.Date())
+                .build());
+    }
 }

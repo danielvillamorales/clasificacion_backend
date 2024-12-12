@@ -13,8 +13,24 @@ public class EmpleadosService {
 
     private final EmpleadosRepository empleadosRepository;
 
+    /**
+     * busca todos los empleados
+     *
+     * @return List<Empleados>
+     */
     public List<Empleados> findAll() {
         return empleadosRepository.findAll();
+    }
+
+    /**
+     * busca un empleado
+     *
+     * @param empleado empleado
+     * @return Empleados
+     */
+    public Empleados findByEmpleado(Long empleado) {
+        return empleadosRepository.findByEmpleado(empleado)
+                .orElseThrow(() -> new RuntimeException("Empleado" + empleado + "no encontrado"));
     }
 
 }

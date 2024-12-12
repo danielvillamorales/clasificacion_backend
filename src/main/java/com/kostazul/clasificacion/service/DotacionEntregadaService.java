@@ -3,19 +3,16 @@ package com.kostazul.clasificacion.service;
 import com.kostazul.clasificacion.model.entity.DotacionElementos;
 import com.kostazul.clasificacion.model.entity.DotacionEntregada;
 import com.kostazul.clasificacion.model.entity.Empleados;
-import com.kostazul.clasificacion.model.repository.DotacionElementosRepository;
 import com.kostazul.clasificacion.model.repository.DotacionEntregaRepository;
-import com.kostazul.clasificacion.model.repository.EmpleadosRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 @Service
 @AllArgsConstructor
@@ -24,59 +21,73 @@ public class DotacionEntregadaService {
 
     private final DotacionEntregaRepository dotacionEntregadaRepository;
 
-    private final DotacionElementosRepository dotacionElementosRepository;
+    private final DotacionElementosService dotacionElementosService;
 
-    private final EmpleadosRepository empleadosRepository;
+    private final EmpleadosService empleadosService;
 
+    /**
+     * Guarda las dotaciones entregadas
+     *
+     * @param datos datos
+     * @return List<DotacionEntregada>
+     */
     public List<DotacionEntregada> saveDotacionEntregadas(final List<String> datos) {
         log.warn("saveDotacionEntregadas");
 
-        DotacionEntregada ultima_dotacion = dotacionEntregadaRepository.findTopByOrderByIdDesc();
-        Long ultimo_id = (ultima_dotacion.getId() > 0) ? ultima_dotacion.getId() : 0L;
+        DotacionEntregada ultimaDotacion = dotacionEntregadaRepository.findTopByOrderByIdDesc();
+        long ultimoId = (ultimaDotacion.getId() > 0) ? ultimaDotacion.getId() : 0L;
         List<DotacionEntregada> dotacionEntregadas = new ArrayList<>();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         for (String dato : datos) {
             String[] parts = dato.split(",");
-            if (parts.length == 5) {
-                Long empleadoCodigo = Long.parseLong(parts[0]);
-                String dotacionCodigo = parts[1];
-                Long cantidad = Long.parseLong(parts[2]);
-                Long precio = Long.parseLong(parts[3]);
-                Date fecha = new Date();
-                try {
-                    fecha = dateFormat.parse(parts[4]);
-                } catch (ParseException e) {
-                    throw new RuntimeException("Error en la fecha debe estar en formato yyyy-mm-dd");
-                }
-
-                Empleados empleado = empleadosRepository.findByEmpleado(empleadoCodigo)
-                        .orElseThrow(() -> new RuntimeException("Empleado" + empleadoCodigo + "no encontrado"));
-                DotacionElementos dotacion = dotacionElementosRepository.findByCodigo(dotacionCodigo)
-                        .orElseThrow(() -> new RuntimeException("Dotacion" + dotacionCodigo + "no encontrado"));
-
-                if (empleado != null && dotacion != null) {
-                    ultimo_id = ultimo_id + 1L;
-                    DotacionEntregada dotacionEntregada = DotacionEntregada.builder()
-                            .id(ultimo_id)
-                            .empleado(empleado.getId())
-                            .dotacion(dotacion.getId())
-                            .cantidad(cantidad)
-                            .talla("u")
-                            .valorunitario(precio)
-                            .usuariodecreacion("NOMINA")
-                            .fecha(fecha)
-                            .fechahoradecreacion(new Date())
-                            .observaciones("Dotacion entregada")
-                            .build();
-
-                    dotacionEntregadas.add(dotacionEntregada);
-                }
-            } else {
+            if (parts.length != 6) {
                 throw new RuntimeException("Error en el formato de los datos");
             }
-        }
+            Long empleadoCodigo = Long.parseLong(parts[0]);
+            String dotacionCodigo = parts[1].toUpperCase();
+            Long cantidad = Long.parseLong(parts[2]);
+            Long precio = Long.parseLong(parts[3]);
+            Date fecha = parseDate(parts[4]);
+            String descripcionProducto = parts[5].toUpperCase();
 
+            Empleados empleado = empleadosService.findByEmpleado(empleadoCodigo);
+            DotacionElementos dotacion = dotacionElementosService.saveDotacionElementos(dotacionCodigo,
+                    descripcionProducto,
+                    precio);
+
+            if (empleado != null && dotacion != null) {
+                ultimoId = ultimoId + 1L;
+                DotacionEntregada dotacionEntregada = DotacionEntregada.builder()
+                        .id(ultimoId)
+                        .empleado(empleado.getId())
+                        .dotacion(dotacion.getId())
+                        .cantidad(cantidad)
+                        .talla("u")
+                        .valorunitario(precio)
+                        .usuariodecreacion("NOMINA")
+                        .fecha(fecha)
+                        .fechahoradecreacion(new Date())
+                        .observaciones("Dotacion entregada")
+                        .build();
+                dotacionEntregadas.add(dotacionEntregada);
+            }
+
+        }
         return dotacionEntregadaRepository.saveAll(dotacionEntregadas);
+    }
+
+    /**
+     * Parsea la fecha
+     *
+     * @param date fecha
+     * @return Date
+     */
+    private Date parseDate(String date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            return dateFormat.parse(date);
+        } catch (ParseException e) {
+            throw new RuntimeException("Error en la fecha debe estar en formato yyyy-mm-dd");
+        }
     }
 }

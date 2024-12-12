@@ -22,6 +22,10 @@ public class DotacionElementosController {
 
     private DotacionElementosService dotacionElementosService;
 
+    /**
+     * Obtiene todos los elementos de dotacion
+     * @return List<DotacionElementos>
+     */
     @GetMapping
     public ResponseEntity<List<DotacionElementos>> getDotacionElementos() {
         log.warn("getDotacionElementos");
