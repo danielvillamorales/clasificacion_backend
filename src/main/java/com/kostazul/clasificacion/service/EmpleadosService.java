@@ -31,7 +31,7 @@ public class EmpleadosService {
      */
     public Empleados findByEmpleado(Long empleado) {
         return empleadosRepository.findByEmpleado(empleado)
-                .orElseThrow(() -> new NotFoundException("Empleado" + empleado + "no encontrado"));
+                .orElseThrow(() -> new NotFoundException("Empleado " + empleado + " no encontrado"));
     }
 
 }
