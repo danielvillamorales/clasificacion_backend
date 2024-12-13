@@ -25,7 +25,7 @@ public class DotacionElementos {
     @Column(name = "descripcion", length = 100)
     private String descripcion;
 
-    @Column(name = "asignarempleadosnuevos", columnDefinition = "int default 0" )
+    @Column(name = "asignarempleadosnuevos", columnDefinition = "int default 0")
     private int empleadosNuevos;
 
     @Column(name = "observaciones", length = 4000)

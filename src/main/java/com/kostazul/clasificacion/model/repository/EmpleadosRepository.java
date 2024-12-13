@@ -7,5 +7,11 @@ import java.util.*;
 
 public interface EmpleadosRepository extends JpaRepository<Empleados, Long> {
 
+    /**
+     * busca un empleado
+     *
+     * @param empleados empleado
+     * @return Empleados
+     */
     Optional<Empleados> findByEmpleado(Long empleados);
 }

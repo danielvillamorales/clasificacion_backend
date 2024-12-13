@@ -11,8 +11,9 @@ public interface ClasificacionPrendasRepository extends JpaRepository<Clasificac
 
     /**
      * buscar por codigo de barras.
-     * @param codbar
-     * @return
+     * @param codbar codigo de barras
+     * @param producto producto
+     * @return lista de clasificacion de prendas
      */
     List<ClasificacionPrendas> findByCodbarOrProducto(String codbar, String producto);
 }

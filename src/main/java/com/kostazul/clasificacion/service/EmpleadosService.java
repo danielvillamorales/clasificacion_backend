@@ -2,6 +2,7 @@ package com.kostazul.clasificacion.service;
 
 import com.kostazul.clasificacion.model.entity.Empleados;
 import com.kostazul.clasificacion.model.repository.EmpleadosRepository;
+import com.kostazul.clasificacion.utils.exceptions.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class EmpleadosService {
      */
     public Empleados findByEmpleado(Long empleado) {
         return empleadosRepository.findByEmpleado(empleado)
-                .orElseThrow(() -> new RuntimeException("Empleado" + empleado + "no encontrado"));
+                .orElseThrow(() -> new NotFoundException("Empleado" + empleado + "no encontrado"));
     }
 
 }

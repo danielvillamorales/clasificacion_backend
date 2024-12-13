@@ -4,11 +4,9 @@ import com.kostazul.clasificacion.model.entity.DotacionElementos;
 import com.kostazul.clasificacion.model.repository.DotacionElementosRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import java.util.Optional;
-import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
